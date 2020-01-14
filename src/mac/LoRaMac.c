@@ -45,6 +45,7 @@
 #include "LoRaMacAdr.h"
 
 #include "LoRaMac.h"
+#include <stdio.h>
 
 /*!
  * Maximum PHY layer payload size
@@ -792,6 +793,7 @@ struct
 
 static void OnRadioTxDone( void )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
     TxDoneParams.CurTime = TimerGetCurrentTime( );
     MacCtx.LastTxSysTime = SysTimeGet( );
 
@@ -805,6 +807,7 @@ static void OnRadioTxDone( void )
 
 static void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
     RxDoneParams.LastRxDone = TimerGetCurrentTime( );
     RxDoneParams.Payload = payload;
     RxDoneParams.Size = size;
@@ -871,6 +874,9 @@ static void ProcessRadioTxDone( void )
     {
         Radio.Sleep( );
     }
+    printf("%s() %dLine MacCtx.RxWindow1Delay:%d\n", __func__, __LINE__, MacCtx.RxWindow1Delay);
+    printf("%s() %dLine MacCtx.RxWindow2Delay:%d\n", __func__, __LINE__, MacCtx.RxWindow2Delay);
+
     // Setup timers
     TimerSetValue( &MacCtx.RxWindowTimer1, MacCtx.RxWindow1Delay );
     TimerStart( &MacCtx.RxWindowTimer1 );
@@ -1710,6 +1716,7 @@ static void OnTxDelayedTimerEvent( void* context )
 
 static void OnRxWindow1TimerEvent( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
     MacCtx.RxWindow1Config.Channel = MacCtx.Channel;
     MacCtx.RxWindow1Config.DrOffset = MacCtx.NvmCtx->MacParams.Rx1DrOffset;
     MacCtx.RxWindow1Config.DownlinkDwellTime = MacCtx.NvmCtx->MacParams.DownlinkDwellTime;
@@ -1722,6 +1729,7 @@ static void OnRxWindow1TimerEvent( void* context )
 
 static void OnRxWindow2TimerEvent( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
     // Check if we are processing Rx1 window.
     // If yes, we don't setup the Rx2 window.
     if( MacCtx.RxSlot == RX_SLOT_WIN_1 )

@@ -30,6 +30,7 @@
 #include "delay.h"
 #include "sx1276.h"
 #include "sx1276-board.h"
+#include <stdio.h>
 
 /*
  * Local types definition
@@ -1432,6 +1433,8 @@ void SX1276OnDio0Irq( void* context )
 {
     volatile uint8_t irqFlags = 0;
 
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.State )
     {
         case RF_RX_RUNNING:
@@ -1619,6 +1622,8 @@ void SX1276OnDio0Irq( void* context )
 
 void SX1276OnDio1Irq( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.State )
     {
         case RF_RX_RUNNING:
@@ -1706,6 +1711,8 @@ void SX1276OnDio1Irq( void* context )
 
 void SX1276OnDio2Irq( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.State )
     {
         case RF_RX_RUNNING:
@@ -1776,6 +1783,8 @@ void SX1276OnDio2Irq( void* context )
 
 void SX1276OnDio3Irq( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.Modem )
     {
     case MODEM_FSK:
@@ -1807,6 +1816,8 @@ void SX1276OnDio3Irq( void* context )
 
 void SX1276OnDio4Irq( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.Modem )
     {
     case MODEM_FSK:
@@ -1826,6 +1837,8 @@ void SX1276OnDio4Irq( void* context )
 
 void SX1276OnDio5Irq( void* context )
 {
+    printf("%s() %dLine\n", __func__, __LINE__);
+
     switch( SX1276.Settings.Modem )
     {
     case MODEM_FSK:
