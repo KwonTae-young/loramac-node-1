@@ -31,6 +31,17 @@
 #include "sx1276.h"
 #include "sx1276-board.h"
 
+#include <zephyr.h>
+#include <device.h>
+#include <drivers/gpio.h>
+#include <sys/util.h>
+#include <sys/printk.h>
+#include <inttypes.h>
+
+struct device *gpiob;
+#define TX_DBG_PIN	8
+#define RX_DBG_PIN	9
+
 /*
  * Local types definition
  */
@@ -224,6 +235,14 @@ TimerEvent_t RxTimeoutSyncWord;
 void SX1276Init( RadioEvents_t *events )
 {
     uint8_t i;
+
+#ifdef __ZEPHYR__
+	gpiob = device_get_binding("GPIOB");
+	gpio_pin_configure(gpiob, TX_DBG_PIN, GPIO_DIR_OUT);
+	gpio_pin_configure(gpiob, RX_DBG_PIN, GPIO_DIR_OUT);
+	gpio_pin_write(gpiob, TX_DBG_PIN, 0);
+	gpio_pin_write(gpiob, RX_DBG_PIN, 0);
+#endif
 
     RadioEvents = events;
 
@@ -1182,9 +1201,28 @@ int16_t SX1276ReadRssi( RadioModems_t modem )
     return rssi;
 }
 
+#define USE_RADIO_DEBUG
 void SX1276SetOpMode( uint8_t opMode )
 {
 #if defined( USE_RADIO_DEBUG )
+#ifdef __ZEPHYR__
+    switch( opMode )
+    {
+        case RF_OPMODE_TRANSMITTER:
+            gpio_pin_write(gpiob, TX_DBG_PIN, 1);
+            gpio_pin_write(gpiob, RX_DBG_PIN, 0);
+            break;
+        case RF_OPMODE_RECEIVER:
+        case RFLR_OPMODE_RECEIVER_SINGLE:
+            gpio_pin_write(gpiob, TX_DBG_PIN, 0);
+            gpio_pin_write(gpiob, RX_DBG_PIN, 1);
+            break;
+        default:
+            gpio_pin_write(gpiob, TX_DBG_PIN, 0);
+            gpio_pin_write(gpiob, RX_DBG_PIN, 0);
+            break;
+    }
+#else
     switch( opMode )
     {
         case RF_OPMODE_TRANSMITTER:
@@ -1201,6 +1239,7 @@ void SX1276SetOpMode( uint8_t opMode )
             SX1276DbgPinRxWrite( 0 );
             break;
     }
+#endif
 #endif
     if( opMode == RF_OPMODE_SLEEP )
     {
