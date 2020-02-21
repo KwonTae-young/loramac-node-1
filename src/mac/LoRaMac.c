@@ -46,6 +46,10 @@
 
 #include "LoRaMac.h"
 
+#define LOG_LEVEL CONFIG_LORAWAN_LOG_LEVEL
+#include <logging/log.h>
+LOG_MODULE_REGISTER(loramac_node);
+
 /*!
  * Maximum PHY layer payload size
  */
@@ -805,6 +809,8 @@ static void OnRadioTxDone( void )
 
 static void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
+    LOG_INF("%s()", __func__);
+
     RxDoneParams.LastRxDone = TimerGetCurrentTime( );
     RxDoneParams.Payload = payload;
     RxDoneParams.Size = size;
@@ -871,6 +877,16 @@ static void ProcessRadioTxDone( void )
     {
         Radio.Sleep( );
     }
+
+    LOG_INF("[before] MacCtx.RxWindow1Delay=%d", MacCtx.RxWindow1Delay);
+    LOG_INF("[before] MacCtx.RxWindow2Delay=%d", MacCtx.RxWindow2Delay);
+
+    MacCtx.RxWindow1Delay = 3000;
+    MacCtx.RxWindow2Delay = 3900;
+
+    LOG_INF("[after] MacCtx.RxWindow1Delay=%d", MacCtx.RxWindow1Delay);
+    LOG_INF("[after] MacCtx.RxWindow2Delay=%d", MacCtx.RxWindow2Delay);
+
     // Setup timers
     TimerSetValue( &MacCtx.RxWindowTimer1, MacCtx.RxWindow1Delay );
     TimerStart( &MacCtx.RxWindowTimer1 );
