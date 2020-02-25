@@ -30,7 +30,7 @@
 #include "delay.h"
 #include "sx1276.h"
 #include "sx1276-board.h"
-
+#include <zephyr.h>
 /*
  * Local types definition
  */
@@ -878,7 +878,7 @@ void SX1276SetRx( uint32_t timeout )
 {
     bool rxContinuous = false;
     TimerStop( &TxTimeoutTimer );
-
+    k_busy_wait(275000);
     switch( SX1276.Settings.Modem )
     {
     case MODEM_FSK:
